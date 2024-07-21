@@ -336,6 +336,15 @@ class Room {
 }
 
 let place_0 = new Room;
+place_0.roomId = 0;
+place_0.roomTitle = "\nWelcome to the 'Become the King' game!";
+place_0.roomDescription = "Type 'e' to start!";
+place_0.movingDirection = "";
+place_0.northRoomId = 0;
+place_0.southRoomId = 0;
+place_0.westRoomId = 0;
+place_0.eastRoomId = 1;
+
 
 let house_1 = new Room;
 house_1.roomId = 1;
@@ -608,7 +617,7 @@ grave_23.roomTitle = "Daphne's Grave";
 grave_23.roomDescription =
 "--Daphne is DEAD--\n";
 grave_23.movingDirection = 
-"None\n";
+"\n";
 grave_23.northRoomId = 0;
 grave_23.southRoomId = 0;
 grave_23.westRoomId = 0;
@@ -620,7 +629,7 @@ inventory_24.roomTitle = "Inventory";
 inventory_24.roomDescription =
 "WELCOME TO INVENTORY";
 inventory_24.movingDirection = 
-"None\n";
+"\n";
 inventory_24.northRoomId = 0;
 inventory_24.southRoomId = 0;
 inventory_24.westRoomId = 0;

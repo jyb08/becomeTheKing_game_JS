@@ -22,20 +22,20 @@ function displayCurrentLocation() {
     message += rooms[gameData.currentRoomId].movingDirection;
     message += "\n";
 
-   // Display Items
-   if (rooms[gameData.currentRoomId].items.length != 0) {
-    message += "The following items are in this room: "
-    let itemsString = ""
-    for (let i = 0; i < rooms[gameData.currentRoomId].items.length; i++) {
-        if (i != 0) {
-            itemsString += ", ";
+    // Display Items
+    if (rooms[gameData.currentRoomId].items.length != 0) {
+        message += "The following items are in this room: "
+        let itemsString = ""
+        for (let i = 0; i < rooms[gameData.currentRoomId].items.length; i++) {
+            if (i != 0) {
+                itemsString += ", ";
+            }
+            itemsString += rooms[gameData.currentRoomId].items[i].name;
         }
-        itemsString += rooms[gameData.currentRoomId].items[i].name;
+        message += itemsString;
+    } else if (gameData.currentRoomId != 0) {
+        message += "No items are in this room."
     }
-    message += itemsString;
-} else {
-    message += "No items are in this room."
-}
 
     displayMessage(message);
 }
@@ -132,6 +132,7 @@ function processText() {
                 // Monster gone
                 currentMonster.healthPoint = 0;
                 currentRoom.monsters.shift();
+                console.log(JSON.stringify(currentRoom.monsters, null, 2));
                 levelUp();
             }
         }

@@ -1,7 +1,7 @@
 
 class GameData {
     constructor() {
-        this.currentRoomId = 1;
+        this.currentRoomId = 0;
         this.previousRoomId = -1;
         this.invincibleMode = false;
         this.items = [];
@@ -24,7 +24,7 @@ for (let index = 1; index < 100; index++) {
 
     
     //house_1.monsters.push(cloneObject(Thug_7));
-   //house_1.monsters.push(cloneObject(Robber_8));
+    //house_1.monsters.push(cloneObject(Robber_8));
     //house_1.monsters.push(cloneObject(Goblin_9));
     //house_1.monsters.push(cloneObject(Ogre_10));
     //house_1.monsters.push(cloneObject(Gargoyle_11));
@@ -33,9 +33,13 @@ for (let index = 1; index < 100; index++) {
 
 }
 
-house_1.monsters.push(Thug_7);
+house_1.monsters.push(cloneObject(Thug_7));
 
-knightSchool_6.characters.push(Thug_7);
+cropField_3.monsters.push(Gandalf_6)
+
+
+knightSchool_6.characters.push(Gandalf_6);
+
 jasperHouse_19.characters.push(Jasper_3);
 square_20.characters.push(Gandalf_6);
 agnesHouse_21.characters.push(Agnes_4);

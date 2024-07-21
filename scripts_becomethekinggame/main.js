@@ -2,6 +2,8 @@ let roomImages = [];
 let characterImages = [];
 let itemImages = []
 
+let startedFirstFlag = true;
+
 document.addEventListener('contextmenu', event => {
     event.preventDefault();
 });
@@ -9,7 +11,7 @@ document.addEventListener('contextmenu', event => {
 function preload() {
 
     // Room Images
-    roomImages.push(0);
+    roomImages.push(loadImage("./images_becomethekinggame/room00.jpg"));
     roomImages.push(loadImage("./images_becomethekinggame/room01.jpg"));
     roomImages.push(loadImage("./images_becomethekinggame/room02.jpg"));
     roomImages.push(loadImage("./images_becomethekinggame/room03.jpg"));
@@ -111,7 +113,13 @@ function draw() {
 
     background(0);
 
-    if (gameData.currentRoomId == 23) { // Death Room
+    if (gameData.currentRoomId == 0) {
+        drawBackgroundRoomScene();
+        if (startedFirstFlag == true) {
+            displayCurrentLocation();
+            startedFirstFlag = false;
+        }
+    } else if (gameData.currentRoomId == 23) { // Death Room
         drawBackgroundRoomScene();
     } else if (gameData.currentRoomId == 24) { // Item Room
         drawBackgroundRoomScene();
@@ -124,6 +132,8 @@ function draw() {
         drawStatusWidgets();
         drawItems();
     }
+
+
 
 }
 
@@ -168,43 +178,62 @@ function drawBattleOpponentCharacters() {
     let currentRoom = rooms[gameData.currentRoomId];
     let lengthCharacters = currentRoom.monsters.length;
 
-    if (lengthCharacters != 0) {
 
-        for (let index = lengthCharacters - 1; index >= 0; index--) {
+    if (lengthCharacters == 1) {
 
-            let monster = currentRoom.monsters[index];
+        image(characterImages[currentRoom.monsters[0].characterId], 
+            currentRoom.monsters[0].x , 
+            currentRoom.monsters[0].y, 
+            currentRoom.monsters[0].w, 
+            currentRoom.monsters[0].h);
+
+        fill('white');
+        rect(currentRoom.monsters[0].xStatusBox, currentRoom.monsters[0].yStatusBox, 100, 5);
+        fill(163, 0, 0);
+        rect(currentRoom.monsters[0].xStatusBox, currentRoom.monsters[0].yStatusBox, 
+            100 * currentRoom.monsters[0].healthPoint / currentRoom.monsters[0].healthPointMax, 
+            5);
+
+    } 
     
-            let multiplier = floor((index + 1) / 2);
-            if ((index + 1) % 2 != 0) { // Odd Numbers: 1, 3, 5, 7...
-                image(characterImages[monster.characterId], 
-                    monster.x + 10 + 50 * multiplier, 
-                    monster.y, 
-                    monster.w * (1 - 0.05 * multiplier), 
-                    monster.h * (1 - 0.05 * multiplier));
-            } else if ((index + 1) % 2 == 0) { // Even Numbers: 2, 4, 6, 8...
-                image(characterImages[monster.characterId], 
-                    monster.x - 50 * multiplier, 
-                    monster.y, 
-                    monster.w * (1 - 0.05 * multiplier), 
-                    monster.h * (1 - 0.05 * multiplier));
-            }
-
-            if (index == 0) {
-                fill('white');
-                rect(monster.xStatusBox, monster.yStatusBox, 100, 5);
-                fill(163, 0, 0);
-                rect(monster.xStatusBox, monster.yStatusBox, 
-                    100 * monster.healthPoint / monster.healthPointMax, 
-                    5);
+    // else if (lengthCharacters == 2) {
         
-            }
+    //     image(characterImages[currentRoom.monsters[0].characterId], 
+    //         currentRoom.monsters[0].x -80, 
+    //         currentRoom.monsters[0].y, 
+    //         currentRoom.monsters[0].w, 
+    //         currentRoom.monsters[0].h);
 
-            
-        }
-    }
+    //     image(characterImages[currentRoom.monsters[1].characterId], 
+    //         currentRoom.monsters[1].x +180, 
+    //         currentRoom.monsters[1].y, 
+    //         currentRoom.monsters[1].w, 
+    //         currentRoom.monsters[1].h);
+        
+    //     fill('white');
+    //     rect(currentRoom.monsters[0].xStatusBox -80, currentRoom.monsters[0].yStatusBox, 100, 5);
+    //     fill(163, 0, 0);
+    //     rect(currentRoom.monsters[0].xStatusBox -80, currentRoom.monsters[0].yStatusBox, 
+    //         100 * currentRoom.monsters[0].healthPoint / currentRoom.monsters[0].healthPointMax, 
+    //         5);
+
+    //     fill('white');
+    //     rect(currentRoom.monsters[1].xStatusBox +180, currentRoom.monsters[1].yStatusBox, 100, 5);
+    //     fill(163, 0, 0);
+    //     rect(currentRoom.monsters[1].xStatusBox +180, currentRoom.monsters[1].yStatusBox, 
+    //         100 * currentRoom.monsters[1].healthPoint / currentRoom.monsters[1].healthPointMax, 
+    //         5);
+        
+
+
+    // } 
+
+
+
+
+
 
     
-    // rooms[gameData.currentRoomId].monsters[0]
 }
 
 function drawMainDaphneCharacter() {
@@ -365,7 +394,24 @@ function changeItemPlaceInInventory() {
 //2. check if locations are empty - if empty - img change to green v. else - red v
 //when mouesclicked released - if empty = change place. else - no change
 
+    let mX = mouseX;
+    let mY = mouseY;
+    //console.log("X: " + mX + " || Y: " + mY);
 
+    // determine which item in the inventory is clicked
+    let itemIndex = findItemIdOfSelectedImage(mX, mY);
+    console.log("CLICKED ITEM: " + itemIndex);
+
+    // when image clicked, move the image
+    let currentItem = gameData.items[itemIndex];
+
+
+
+    // TODO:
+    // 그림 계속 나와야함(노깜빢), 위치 수정, 드래그 가능하게, 드래그 하는 동안 그림이 나오도록)
+    image(itemImages[changeImageVersion(currentItem.itemId, 1)], 
+        mX,
+        mY);
 
 }
 
@@ -394,24 +440,7 @@ function mouseClicked() {
 }
 
 function mouseDragged() {
-    let mX = mouseX;
-    let mY = mouseY;
-    //console.log("X: " + mX + " || Y: " + mY);
-    
-    // determine which item in the inventory is clicked
-    let itemIndex = findItemIdOfSelectedImage(mX, mY);
-    console.log("CLICKED ITEM: " + itemIndex);
 
-    // when image clicked, move the image
-    let currentItem = gameData.items[itemIndex];
-    
-    
-
-    // TODO:
-    // 그림 계속 나와야함(노깜빢), 위치 수정, 드래그 가능하게, 드래그 하는 동안 그림이 나오도록)
-    image(itemImages[changeImageVersion(currentItem.itemId, 1)], 
-        400,
-        200);
 
 
 }
