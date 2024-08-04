@@ -145,53 +145,43 @@ function drawNonPlayableCharacters() {
 
     let currentRoom = rooms[gameData.currentRoomId];
     
-    let lengthCharacters = currentRoom.characters.length;
+    if (currentRoom.monster != 0) {
+        let character = currentRoom.monster;
 
-    if (lengthCharacters != 0) {
-        for (let i = 0; i < lengthCharacters; i++) {
-            let character = currentRoom.characters[i];
+        image(characterImages[character.characterId], 
+            character.x, 
+            character.y, 
+            character.w, 
+            character.h);
 
-            image(characterImages[character.characterId], 
-                character.x, 
-                character.y, 
-                character.w, 
-                character.h);
-
-            
-            fill('white')
-            rect(character.xStatusBox, character.yStatusBox, 100, 5);
-            fill(163, 0, 0)
-            rect(character.xStatusBox, character.yStatusBox, 
-                100 * character.healthPoint / character.healthPointMax, 
-                5);
         
-        }
+        fill('white')
+        rect(character.xStatusBox, character.yStatusBox, 100, 5);
+        fill(163, 0, 0)
+        rect(character.xStatusBox, character.yStatusBox, 
+            100 * character.healthPoint / character.healthPointMax, 
+            5);
     }
-    
-
-
 
 }
 
 function drawBattleOpponentCharacters() {
 
     let currentRoom = rooms[gameData.currentRoomId];
-    let lengthCharacters = currentRoom.monsters.length;
 
+    if (currentRoom.monster != 0) {
 
-    if (lengthCharacters == 1) {
-
-        image(characterImages[currentRoom.monsters[0].characterId], 
-            currentRoom.monsters[0].x , 
-            currentRoom.monsters[0].y, 
-            currentRoom.monsters[0].w, 
-            currentRoom.monsters[0].h);
+        image(characterImages[currentRoom.monster.characterId], 
+            currentRoom.monster.x , 
+            currentRoom.monster.y, 
+            currentRoom.monster.w, 
+            currentRoom.monster.h);
 
         fill('white');
-        rect(currentRoom.monsters[0].xStatusBox, currentRoom.monsters[0].yStatusBox, 100, 5);
+        rect(currentRoom.monster.xStatusBox, currentRoom.monster.yStatusBox, 100, 5);
         fill(163, 0, 0);
-        rect(currentRoom.monsters[0].xStatusBox, currentRoom.monsters[0].yStatusBox, 
-            100 * currentRoom.monsters[0].healthPoint / currentRoom.monsters[0].healthPointMax, 
+        rect(currentRoom.monster.xStatusBox, currentRoom.monster.yStatusBox, 
+            100 * currentRoom.monster.healthPoint / currentRoom.monster.healthPointMax, 
             5);
 
     } 
@@ -309,6 +299,7 @@ function doubleClicked() {
     }
 }
 
+// TODO: 
 //
 // 0    100     200    300   400    500    600    700    800
 // [ 0,0 ][ 0,1 ][ 0,2 ][ 0,3 ][ 0,4 ][ 0,5 ][ 0,6 ][ 0,7 ]
@@ -321,12 +312,12 @@ function doubleClicked() {
 // item이 차지하는 area = (I, J)                 (I, J + size[1])
 //            2x2           (I + size[0], J)       (I + size[0], J + size[1])
 // 
-//
+// 
 // 
 // 
 
 // Some armour => IJ 0,4  =>   0,4   0,5    
-//                             1,4    1,5
+//                             1,4   1,5
 //              mouse == 1,4    
 // => inventory item id return 
 

@@ -18,9 +18,10 @@ class Room {
         
         this.eastRoomId = 0;
         
-        this.characters = [];
+        // this.characters = [];
             
-        this.monsters = [];
+        // NPCs or Monsters
+        this.monster = 0;
         
         this.items = [];
                

@@ -38,6 +38,15 @@ function displayCurrentLocation() {
     }
 
     displayMessage(message);
+
+    if (rooms[gameData.currentRoomId].monster != 0
+        && rooms[gameData.currentRoomId].monster.occupation == "Monster"
+    ) { // MONSTER ATTACK FUNCTION CALLED. Works when monster exists in room
+        displayMessage("A Monster attacks you!");
+        monsterAttackMode();
+    }
+
+
 }
 
 function displayText() {
@@ -51,103 +60,89 @@ function processText() {
 
     // Receive UserInput
     let userInput = displayText();
+    let currentRoom = rooms[gameData.currentRoomId];
+
+    let numberOfMonsters = currentRoom.monster;
+    let numberOfNPCs;
     
+            
     // Read UserInput and Move rooms
     console.log("USERINPUT: " + userInput);
 
+
     if (userInput == "e") {
-        if (rooms[gameData.currentRoomId].eastRoomId != 0) {
+        if (rooms[gameData.currentRoomId].eastRoomId != 0 
+            && currentRoom.monster == 0) {
             gameData.currentRoomId = rooms[gameData.currentRoomId].eastRoomId;
-        } else {
-            displayMessage("This direction east does not exist!");
+        } 
+        
+        if (rooms[gameData.currentRoomId].eastRoomId == 0) {
+            displayMessage("You can not move EAST!");
         }
+
+        if (currentRoom.monster != 0) {
+            displayMessage("You must defeat before moving!");
+        }
+
     } else if (userInput == "w") {
-        if (rooms[gameData.currentRoomId].westRoomId != 0) {
+        if (rooms[gameData.currentRoomId].westRoomId != 0 
+            && currentRoom.monster == 0) {
             gameData.currentRoomId = rooms[gameData.currentRoomId].westRoomId;
-        } else {
-            displayMessage("This direction west does not exist!");
+        } 
+        
+        if (rooms[gameData.currentRoomId].westRoomId == 0) {
+            displayMessage("You can not move WEST!");
         }
+
+        if (currentRoom.monster != 0) {
+            displayMessage("You must defeat before moving!");
+        }
+
     } else if (userInput == "n") {
-        if (rooms[gameData.currentRoomId].northRoomId != 0) {
+        if (rooms[gameData.currentRoomId].northRoomId != 0 
+            && currentRoom.monster == 0) {
             gameData.currentRoomId = rooms[gameData.currentRoomId].northRoomId;
-        } else {
-            displayMessage("This direction north does not exist!");
+        } 
+        
+        if (rooms[gameData.currentRoomId].northRoomId == 0) {
+            displayMessage("You can not move NORTH!");
         }
+
+        if (currentRoom.monster != 0) {
+            displayMessage("You must defeat before moving!");
+        }
+
     } else if (userInput == "s") {
-        if (rooms[gameData.currentRoomId].southRoomId != 0) {
+        if (rooms[gameData.currentRoomId].southRoomId != 0 
+            && currentRoom.monster == 0) {
             gameData.currentRoomId = rooms[gameData.currentRoomId].southRoomId;
-        } else {
-            displayMessage("This direction south does not exist!");
-        }
-    } else if (userInput == "a") {
-        displayMessage("-----------Monster Attack Mode-----------");
-        // find room, find monsster, find first monster, attack
-        let currentRoom = rooms[gameData.currentRoomId];
+        } 
         
-        if (currentRoom.monsters.length != 0) {
-            let currentMonster = currentRoom.monsters[0];
-            
-            // Moster attacks Daphne.
-            let effect1 = calculateDefensePoint(Daphne_1.intelligence, Daphne_1.charisma) 
-                        - calculateAttackPoint(currentMonster.strength);
-            
-            if (effect1 < 0) {
-                Daphne_1.healthPoint += effect1;
-                displayMessage("Monster hit with an effect of " + effect1);
-            } else {
-                effect1 = 0;
-                displayMessage("Monster missed attack.");
-            }
-            
-            if (Daphne_1.healthPoint <= 0) { // Daphne is dead.
-                Daphne_1.healthPoint = 0;
-                gameData.currentRoomId = 23;
-            }
+        if (rooms[gameData.currentRoomId].southRoomId == 0) {
+            displayMessage("You can not move SOUTH!");
+        }
 
-            // Daphne attacks the frontal monster.
-            let effect2 = calculateDefensePoint(currentMonster.intelligence, currentMonster.charisma) 
-                        - calculateAttackPoint(Daphne_1.strength);
-            
-            if (effect2 < 0) {
-                currentMonster.healthPoint += effect2;
-                displayMessage("Daphne hit with an effect of " + effect2);
-            } else {
-                effect2 = 0;
-                displayMessage("Daphne missed attack.");
-            }
-            
-            if (currentMonster.healthPoint <= 0) { // The monster is dead.
-                displayMessage(currentMonster.name + " is DEAD!");
+        if (currentRoom.monster != 0) {
+            displayMessage("You must defeat before moving!");
+        }
                 
-                // Money, monster's money x prob
-                let earnedMoney = calculateAdjustedRandomMoneyOrExp(currentMonster.money);
-                Daphne_1.money += earnedMoney;
-                displayMessage("Daphne got " + earnedMoney + " money.");
-
-                // Experience, monster's exp x prob
-                let earnedExp = calculateAdjustedRandomMoneyOrExp(currentMonster.experience);
-                Daphne_1.experience += earnedExp;
-                displayMessage("Daphne got " + earnedExp + " experience.");
-
-                // Monster gone
-                currentMonster.healthPoint = 0;
-                currentRoom.monsters.shift();
-                console.log(JSON.stringify(currentRoom.monsters, null, 2));
-                levelUp();
-            }
-        }
-        
-    } else if (userInput == "t") {
+    } else if (userInput == "a" 
+        && currentRoom.monster != 0
+        && currentRoom.monster.occupation != "Monster"
+    ) {
         displayMessage("-----------NPC Attack Mode-----------");
         let currentRoom = rooms[gameData.currentRoomId];
 
-        if (currentRoom.characters.length != 0) {
-            let currentCharacter = currentRoom.characters[0];
+        if (currentRoom.monster != 0) {
+            let currentCharacter = currentRoom.monster;
             let currentCharacterDead = false;
 
             // Daphne attacks NPC
 
-            let effect1 = calculateDefensePoint(currentCharacter.intelligence, currentCharacter.charisma) 
+            let effect1 = 
+            calculateDefensePoint(
+                currentCharacter.intelligence, 
+                currentCharacter.charisma) 
             - calculateAttackPoint(Daphne_1.strength);
 
             if (effect1 < 0) {
@@ -174,7 +169,7 @@ function processText() {
                 // NPC gone
                 currentCharacter.healthPoint = 0;
                 currentCharacterDead = true;
-                currentRoom.characters.shift();
+                currentRoom.monster = 0;
                 levelUp();
             }
 
@@ -234,6 +229,88 @@ function processText() {
 }
 
 
+function monsterAttackMode() {
+    displayMessage("-----------Monster Attack Mode-----------");
+    
+    while (currentRoom.monster != 0) {
+        displayMessage("Enter something: ");
+
+        let userInput = displayText();
+
+
+
+
+        
+    
+
+    }
+
+    
+
+
+
+
+}
+
+function attackMonster() {
+
+    let currentRoom = rooms[gameData.currentRoomId];
+        
+    if (currentRoom.monster != 0) {
+
+        let currentMonster = currentRoom.monster;
+        
+        // Monster attacks Daphne.
+        let effect1 = calculateDefensePoint(Daphne_1.intelligence, Daphne_1.charisma) 
+                    - calculateAttackPoint(currentMonster.strength);
+        
+        if (effect1 < 0) {
+            Daphne_1.healthPoint += effect1;
+            displayMessage("Monster hit with an effect of " + effect1);
+        } else {
+            effect1 = 0;
+            displayMessage("Monster missed attack.");
+        }
+        
+        if (Daphne_1.healthPoint <= 0) { // Daphne is dead.
+            Daphne_1.healthPoint = 0;
+            gameData.currentRoomId = 23;
+        }
+
+        // Daphne attacks the frontal monster.
+        let effect2 = calculateDefensePoint(currentMonster.intelligence, currentMonster.charisma) 
+                    - calculateAttackPoint(Daphne_1.strength);
+        
+        if (effect2 < 0) {
+            currentMonster.healthPoint += effect2;
+            displayMessage("Daphne hit with an effect of " + effect2);
+        } else {
+            effect2 = 0;
+            displayMessage("Daphne missed attack.");
+        }
+        
+        if (currentMonster.healthPoint <= 0) { // The monster is dead.
+            displayMessage(currentMonster.name + " is DEAD!");
+            
+            // Money, monster's money x prob
+            let earnedMoney = calculateAdjustedRandomMoneyOrExp(currentMonster.money);
+            Daphne_1.money += earnedMoney;
+            displayMessage("Daphne got " + earnedMoney + " money.");
+
+            // Experience, monster's exp x prob
+            let earnedExp = calculateAdjustedRandomMoneyOrExp(currentMonster.experience);
+            Daphne_1.experience += earnedExp;
+            displayMessage("Daphne got " + earnedExp + " experience.");
+
+            // Monster gone
+            currentMonster.healthPoint = 0;
+            currentRoom.monster = 0;
+            levelUp();
+        }
+    }
+    
+}
+
 
 
 function findAvailableItemIndex(itemName) {
@@ -252,18 +329,18 @@ function findAvailableItemIndex(itemName) {
 
 
 function calculateAdjustedRandomMoneyOrExp(moneyOrExp) {
-    point = moneyOrExp * int(random(50, 150)) / 100;
+    point = moneyOrExp * int(random(50, 100)) / 100;
     return int(point);
 }
 
 function calculateAttackPoint(strength) {
-    point = strength * int(random(50, 150)) / 100;
+    point = strength * int(random(50, 100)) / 100;
     return point;
 }
 
 function calculateDefensePoint(intelligence, charisma) {
-    point = intelligence * int(random(50, 150)) / 100;
-    point += charisma * int(random(20, 50)) / 100;
+    point = intelligence * int(random(50, 100)) / 100;
+    point += charisma * int(random(20, 30)) / 100;
     return point;
 }
 
