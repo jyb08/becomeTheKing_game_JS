@@ -73,18 +73,25 @@ class Room {
 
     // Assuming there MUST be an item in the room.
     getItemFromRoom(itemName) {
+        
+        console.log("APPLE_0 DEBUG: HERE222222!!!!!!!!!!" )
 
         if (itemName == "apple") {
             let inventoryLocation = findItemSpotFor1x1(); 
+            console.log("APPLE_0 DEBUG: HERE!!!!!!!!!!" )
             if (inventoryLocation[0] != -1) {
 
                 let i = inventoryLocation[0];
                 let j = inventoryLocation[1];
 
                 // 
-                gameData.inventory[i][j] = true;
+                gameData.inventory[i][j] = true
+
+                console.log("APPLE_0 DEBUG: " + apple_0.inventoryLocationIJ[1] + ", " + apple_0.inventoryLocationIJ[0]);
 
                 let currentApple = JSON.parse(JSON.stringify(apple_0));
+                
+                // let currentApple = cloneObject(apple_0);
                 currentApple.inventoryLocationIJ = [i, j];
                 
                 gameData.items.push(currentApple);
@@ -636,6 +643,17 @@ inventory_24.southRoomId = 0;
 inventory_24.westRoomId = 0;
 inventory_24.eastRoomId = 0; 
 
+let ending_25 = new Room;
+ending_25.roomId = 25;
+ending_25.roomTitle = "Ending";
+ending_25.roomDescription =
+"WELCOME TO THE ENDING";
+ending_25.movingDirection = 
+"\n";
+ending_25.northRoomId = 0;
+ending_25.southRoomId = 0;
+ending_25.westRoomId = 0;
+ending_25.eastRoomId = 0; 
 
 let rooms = [];
 
@@ -664,5 +682,5 @@ rooms.push(agnesHouse_21);
 rooms.push(kingsPalace_22);
 rooms.push(grave_23);
 rooms.push(inventory_24);
-
+rooms.push(ending_25);
 

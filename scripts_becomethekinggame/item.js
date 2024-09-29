@@ -29,6 +29,8 @@ class Item {
         this.inventoryLocationPixel = [-1, -1];
 
         this.inventoryLocationSize = [-1, -1];
+        
+        this.imageVersion = 0; // 0 = regular version, 1 = green version, 2 = red version
 
     }
 
@@ -50,16 +52,17 @@ apple_0.price = 30;
 apple_0.probability = 0.30;
 apple_0.inventoryLocationSize = [1, 1];
 apple_0.inventoryLocationIJ = [-1, -1];
+apple_0.imageVersion = 0;
 
 
 let chicken_1 = new Item;
 
 chicken_1.name = "chicken";
 chicken_1.itemId = 1;
-chicken_1.strength = 2;
+chicken_1.strength = 1;
 chicken_1.intelligence = 0;
 chicken_1.charisma = 0;
-chicken_1.healthPoint = 10;
+chicken_1.healthPoint = 15;
 chicken_1.magicPoint = 0;
 chicken_1.energyPoint = 7;
 chicken_1.expendable = true;
@@ -67,6 +70,7 @@ chicken_1.price = 50;
 chicken_1.probability = 0.25;
 chicken_1.inventoryLocationSize = [2, 1];
 chicken_1.inventoryLocationIJ = [-1, -1];
+chicken_1.imageVersion = 0;
 
 
 let medicine_2 = new Item;
@@ -76,7 +80,7 @@ medicine_2.itemId = 2;
 medicine_2.strength = 0;
 medicine_2.intelligence = 0;
 medicine_2.charisma = 0;
-medicine_2.healthPoint = 15;
+medicine_2.healthPoint = 25;
 medicine_2.magicPoint = 0;
 medicine_2.energyPoint = 15;
 medicine_2.expendable = true;
@@ -84,6 +88,7 @@ medicine_2.price = 100;
 medicine_2.probability = 0.20;
 medicine_2.inventoryLocationSize = [1, 1];
 medicine_2.inventoryLocationIJ = [-1, -1];
+medicine_2.imageVersion = 0;
 
 
 let short_sword_3 = new Item;
@@ -101,6 +106,7 @@ short_sword_3.price = 300;
 short_sword_3.probability = 0.15;
 short_sword_3.inventoryLocationSize = [1, 3];
 short_sword_3.inventoryLocationIJ = [-1, -1];
+short_sword_3.imageVersion = 0;
 
 
 let long_sword_4 = new Item;
@@ -118,6 +124,7 @@ long_sword_4.price = 600;
 long_sword_4.probability = 0.10;
 long_sword_4.inventoryLocationSize = [1, 4];
 long_sword_4.inventoryLocationIJ = [-1, -1];
+long_sword_4.imageVersion = 0;
 
 
 let broadsword_5 = new Item;
@@ -135,6 +142,7 @@ broadsword_5.price = 1000;
 broadsword_5.probability = 0.05;
 broadsword_5.inventoryLocationSize = [1, 4];
 broadsword_5.inventoryLocationIJ = [-1, -1];
+broadsword_5.imageVersion = 0;
 
 
 let leather_armor_6 = new Item;
@@ -152,6 +160,7 @@ leather_armor_6.price = 300;
 leather_armor_6.probability = 0.15;
 leather_armor_6.inventoryLocationSize = [2, 2];
 leather_armor_6.inventoryLocationIJ = [-1, -1];
+leather_armor_6.imageVersion = 0;
 
 
 let chain_armor_7 = new Item;
@@ -169,6 +178,7 @@ chain_armor_7.price = 600;
 chain_armor_7.probability = 0.10;
 chain_armor_7.inventoryLocationSize = [2, 3];
 chain_armor_7.inventoryLocationIJ = [-1, -1];
+chain_armor_7.imageVersion = 0;
 
 
 let plate_armor_8 = new Item;
@@ -186,6 +196,7 @@ plate_armor_8.price = 1000;
 plate_armor_8.probability = 0.05;
 plate_armor_8.inventoryLocationSize = [2, 4];
 plate_armor_8.inventoryLocationIJ = [-1, -1];
+plate_armor_8.imageVersion = 0;
 
 
 let dragon_sword_9 = new Item;
@@ -203,6 +214,7 @@ dragon_sword_9.price = 99000;
 dragon_sword_9.probability = 0.01;
 dragon_sword_9.inventoryLocationSize = [1, 4];
 dragon_sword_9.inventoryLocationIJ = [-1, -1];
+dragon_sword_9.imageVersion = 0;
 
 
 let items = [];

@@ -3,6 +3,7 @@ let characterImages = [];
 let itemImages = []
 
 let startedFirstFlag = true;
+let fontLibreBaskerville;
 
 document.addEventListener('contextmenu', event => {
     event.preventDefault();
@@ -36,6 +37,8 @@ function preload() {
     roomImages.push(loadImage("./images_becomethekinggame/room22.png"));
     roomImages.push(loadImage("./images_becomethekinggame/room23.png"));
     roomImages.push(loadImage("./images_becomethekinggame/room24.png"));
+    roomImages.push(loadImage("./images_becomethekinggame/room25.png"));
+    roomImages.push(loadImage("./images_becomethekinggame/room26.png"));
 
 
     // Character Images
@@ -102,6 +105,8 @@ function preload() {
     itemImages.push(loadImage("./images_becomethekinggame/dragonswordv01.png"));
     itemImages.push(loadImage("./images_becomethekinggame/dragonswordv02.png"));
 
+    fontLibreBaskerville = loadFont("./fonts/LibreBaskerville-Italic.ttf");
+
 }
 function setup() {
     frameRate(24);
@@ -124,6 +129,17 @@ function draw() {
     } else if (gameData.currentRoomId == 24) { // Item Room
         drawBackgroundRoomScene();
         drawItems();
+        
+    } else if (gameData.currentRoomId == 25) { // Ending1 Room
+        drawBackgroundRoomScene();
+        drawEndingCounter();
+        gameData.endingCounter--;
+        if (gameData.endingCounter < 0) {
+            gameData.currentRoomId = 26;
+        }
+
+    } else if (gameData.currentRoomId == 26) { // Ending2 Room
+        drawBackgroundRoomScene(); 
     } else {
         drawBackgroundRoomScene();
         drawNonPlayableCharacters();
@@ -133,12 +149,19 @@ function draw() {
         drawItems();
     }
 
+}
 
-
+function drawEndingCounter() {
+    let time = ceil(gameData.endingCounter / 24);
+    textSize(85);
+    fill(214,54,95);
+    textFont(fontLibreBaskerville);
+    text(time, 720, 370);
 }
 
 function drawBackgroundRoomScene() {
-    image(roomImages[gameData.currentRoomId], width/2, height/2); 
+    // image(roomImages[gameData.currentRoomId], width/2, height/2); 
+    image(roomImages[gameData.currentRoomId], 800/2, 400/2); 
 }
 
 function drawNonPlayableCharacters() {
@@ -153,7 +176,6 @@ function drawNonPlayableCharacters() {
             character.y, 
             character.w, 
             character.h);
-
         
         fill('white')
         rect(character.xStatusBox, character.yStatusBox, 100, 5);
@@ -332,17 +354,17 @@ function drawItems() {
             // I = y 세로
             if (currentItem.inventoryLocationSize[0] == 1) { //100x---
                 if ((currentItem.inventoryLocationSize[1]) == 1) {
-                    image(itemImages[1 + currentItem.itemId * 3], 
+                    image(itemImages[1 + currentItem.itemId * 3 + currentItem.imageVersion], 
                         locationJ * 100 + 50,
                         locationI * 100 + 50);
                 }
                 else if ((currentItem.inventoryLocationSize[1]) == 3) {
-                    image(itemImages[1 + currentItem.itemId * 3], 
+                    image(itemImages[1 + currentItem.itemId * 3 + currentItem.imageVersion], 
                         locationJ * 100 + 50,
                         locationI * 100 + 150);
                 }
                 else if ((currentItem.inventoryLocationSize[1]) == 4) {
-                    image(itemImages[1 + currentItem.itemId * 3], 
+                    image(itemImages[1 + currentItem.itemId * 3 + currentItem.imageVersion], 
                         locationJ * 100 + 50,
                         200);
                 }
@@ -350,22 +372,22 @@ function drawItems() {
             }
             else if (currentItem.inventoryLocationSize[0] == 2) {
                 if ((currentItem.inventoryLocationSize[1]) == 1) {
-                    image(itemImages[1 + currentItem.itemId * 3], 
+                    image(itemImages[1 + currentItem.itemId * 3 + currentItem.imageVersion], 
                         locationJ * 100 + 100,
                         locationI * 100 + 50);
                 }
                 else if ((currentItem.inventoryLocationSize[1]) == 2) {
-                    image(itemImages[1 + currentItem.itemId * 3], 
+                    image(itemImages[1 + currentItem.itemId * 3 + currentItem.imageVersion], 
                         locationJ * 100 + 100,
                         locationI * 100 + 100);
                 }
                 else if ((currentItem.inventoryLocationSize[1]) == 3) {
-                    image(itemImages[1 + currentItem.itemId * 3], 
+                    image(itemImages[1 + currentItem.itemId * 3 + currentItem.imageVersion], 
                         locationJ * 100 + 100,
                         locationI * 100 + 150);
                 }
                 else if ((currentItem.inventoryLocationSize[1]) == 4) {
-                    image(itemImages[1 + currentItem.itemId * 3], 
+                    image(itemImages[1 + currentItem.itemId * 3 + currentItem.imageVersion], 
                         locationJ * 100 + 100,
                         200);
                 }
@@ -378,12 +400,7 @@ function drawItems() {
 
 }
 
-function changeItemPlaceInInventory() {
-
-    
-//1. mouseclicked
-//2. check if locations are empty - if empty - img change to green v. else - red v
-//when mouesclicked released - if empty = change place. else - no change
+function selectItemInInvectoryForMoving() {
 
     let mX = mouseX;
     let mY = mouseY;
@@ -391,18 +408,27 @@ function changeItemPlaceInInventory() {
 
     // determine which item in the inventory is clicked
     let itemIndex = findItemIdOfSelectedImage(mX, mY);
-    console.log("CLICKED ITEM: " + itemIndex);
+    // console.log("CLICKED ITEM: " + itemIndex);
+    if (itemIndex == -1) {
+        // Nothing selected!!!!!
 
-    // when image clicked, move the image
-    let currentItem = gameData.items[itemIndex];
+    } else if (itemIndex == gameData.selectedItemInInventory) {
 
+        gameData.selectedItemInInventory = -1;
 
+        for (let i = 0; i < gameData.items.length; i++) {
+            gameData.items[i].imageVersion = 0;
+        }
 
-    // TODO:
-    // 그림 계속 나와야함(노깜빢), 위치 수정, 드래그 가능하게, 드래그 하는 동안 그림이 나오도록)
-    image(itemImages[changeImageVersion(currentItem.itemId, 1)], 
-        mX,
-        mY);
+    } else {
+        gameData.selectedItemInInventory = itemIndex;
+        let currentItem = gameData.items[itemIndex];
+    
+        for (let i = 0; i < gameData.items.length; i++) {
+            gameData.items[i].imageVersion = 0;
+        }
+        currentItem.imageVersion = 1;
+    }
 
 }
 
@@ -420,20 +446,9 @@ function mouseClicked() {
 
     // mouseclick in inventory 
     if (gameData.currentRoomId == 24) {
-        // 1. check if clicked space is filled = function
-        // 2. if filled = change img to green
-        //         mouseMoved: 
-        //      
-
-
+        selectItemInInvectoryForMoving();
     }
     
-}
-
-function mouseDragged() {
-
-
-
 }
 
 function changeImageVersion(id, versionNumber) {
@@ -448,5 +463,243 @@ function changeImageVersion(id, versionNumber) {
         return (3 + id * 3);
     }
 }
+
+function keyPressed() {
+    if (gameData.selectedItemInInventory != -1) {
+        if (keyCode === LEFT_ARROW) {
+            moveItemLeft(gameData.selectedItemInInventory);
+        } else if (keyCode === RIGHT_ARROW) {
+            moveItemRight(gameData.selectedItemInInventory);
+        } else if (keyCode === UP_ARROW) {
+            moveItemUp(gameData.selectedItemInInventory)
+        } else if (keyCode === DOWN_ARROW) {
+            moveItemDown(gameData.selectedItemInInventory)
+        }  
+    }
+}
+
+function moveItemLeft(itemIndex) {
+    if (checkEmptySpace(itemIndex, "LEFT")) {
+
+        updateGameDataInventoryToFalse(itemIndex); // Existing locations to false
+
+        let i = gameData.items[itemIndex].inventoryLocationIJ[0];
+        let j = gameData.items[itemIndex].inventoryLocationIJ[1];
+        gameData.items[itemIndex].inventoryLocationIJ = [i, j - 1];
+
+        updateGameDataInventoryToTrue(itemIndex); // Filling locations to true
+
+    }
+}
+
+function moveItemRight(itemIndex) {
+    if (checkEmptySpace(itemIndex, "RIGHT")) {
+
+        updateGameDataInventoryToFalse(itemIndex); // Existing locations to false
+
+        let i = gameData.items[itemIndex].inventoryLocationIJ[0];
+        let j = gameData.items[itemIndex].inventoryLocationIJ[1];   
+        gameData.items[itemIndex].inventoryLocationIJ = [i, j + 1];
+
+        updateGameDataInventoryToTrue(itemIndex); // Filling locations to true
+
+    }
+}
+
+function moveItemUp(itemIndex) {
+    if (checkEmptySpace(itemIndex, "UP")) {
+
+        updateGameDataInventoryToFalse(itemIndex); // Existing locations to false
+
+        let i = gameData.items[itemIndex].inventoryLocationIJ[0];
+        let j = gameData.items[itemIndex].inventoryLocationIJ[1];
+        gameData.items[itemIndex].inventoryLocationIJ = [i - 1, j];
+
+        updateGameDataInventoryToTrue(itemIndex); // Filling locations to true
+
+    }
+}
+
+function moveItemDown(itemIndex) {
+    if (checkEmptySpace(itemIndex, "DOWN")) {
+        updateGameDataInventoryToFalse(itemIndex); // Existing locations to false
+
+        let i = gameData.items[itemIndex].inventoryLocationIJ[0];
+        let j = gameData.items[itemIndex].inventoryLocationIJ[1];
+        gameData.items[itemIndex].inventoryLocationIJ = [i + 1, j];
+
+        updateGameDataInventoryToTrue(itemIndex); // Filling locations to true
+    }
+}
+
+function updateGameDataInventoryToFalse(itemIndex) {
+    let currentItem = gameData.items[itemIndex];
+    let xRepetition1 = currentItem.inventoryLocationIJ[1] + currentItem.inventoryLocationSize[0]; 
+    let yRepetition1 = currentItem.inventoryLocationIJ[0] + currentItem.inventoryLocationSize[1]; 
+    for (let x = currentItem.inventoryLocationIJ[1]; x < xRepetition1; x++) { 
+        for (let y = currentItem.inventoryLocationIJ[0]; y < yRepetition1; y++) {  
+            gameData.inventory[y][x] = false;
+        }
+    }
+}
+
+function updateGameDataInventoryToTrue(itemIndex) {
+    let currentItem = gameData.items[itemIndex];
+    let xRepetition1 = currentItem.inventoryLocationIJ[1] + currentItem.inventoryLocationSize[0]; 
+    let yRepetition1 = currentItem.inventoryLocationIJ[0] + currentItem.inventoryLocationSize[1]; 
+    for (let x = currentItem.inventoryLocationIJ[1]; x < xRepetition1; x++) { 
+        for (let y = currentItem.inventoryLocationIJ[0]; y < yRepetition1; y++) {  
+            gameData.inventory[y][x] = true;
+        }
+    }
+}
+
+// True if there is space available, false if not.
+function checkEmptySpace(itemIndex, direction) { // direction: LEFT | RIGHT | UP | DOWN
+    
+    let currentItem = gameData.items[itemIndex];
+    debugItem(currentItem);
+    let inventoryTempCopy = JSON.parse(JSON.stringify(gameData.inventory));
+
+    debugInventory(inventoryTempCopy, "BEFORE");
+    // Empty current location to compare.
+
+    let xRepetition1 = currentItem.inventoryLocationIJ[1] + currentItem.inventoryLocationSize[0]; // 1
+    let yRepetition1 = currentItem.inventoryLocationIJ[0] + currentItem.inventoryLocationSize[1]; // 1
+    for (let x = currentItem.inventoryLocationIJ[1]; x < xRepetition1; x++) { 
+        for (let y = currentItem.inventoryLocationIJ[0]; y < yRepetition1; y++) {  
+            inventoryTempCopy[y][x] = false;
+            console.log("EXECUTED!!!!!!!" + x + ", " + y);
+        }
+    }
+
+    debugInventory(inventoryTempCopy, "AFTER");
+    debugInventory(gameData.inventory, "ORIGINAL");
+
+    // Check if the desired locations are empty
+    let xRepetition2 = currentItem.inventoryLocationIJ[1] + currentItem.inventoryLocationSize[0]; 
+    let yRepetition2 = currentItem.inventoryLocationIJ[0] + currentItem.inventoryLocationSize[1]; 
+  
+    for (let x = currentItem.inventoryLocationIJ[1]; x < xRepetition2; x++) {
+        for (let y = currentItem.inventoryLocationIJ[0]; y < yRepetition2; y++) {
+            switch (direction) {
+            case "LEFT":
+                if (checkIfCoordinatesInside(x-1, y) == false) { return false; }
+                if (inventoryTempCopy[y][x-1] == true) { return false; }
+                break;
+            case "RIGHT":
+                if (checkIfCoordinatesInside(x+1, y) == false) { return false; }
+                if (inventoryTempCopy[y][x+1] == true) { return false; }
+                break;
+            case "UP":
+                if (checkIfCoordinatesInside(x, y-1) == false) { return false; }
+                if (inventoryTempCopy[y-1][x] == true) { return false; }
+                break;
+            case "DOWN":
+                if (checkIfCoordinatesInside(x, y+1) == false) { return false; }
+                if (inventoryTempCopy[y+1][x] == true) { return false; }
+                break;
+            }
+        }
+    }
+
+    return true;
+}
+
+// True if inside, false if outside
+function checkIfCoordinatesInside(x, y) {
+    if (x < 0 || 7 < x) { return false; }
+    if (y < 0 || 3 < y) { return false; }
+    return true;
+}
+
+function debugItem(item) {
+    console.log("==== ==== ==== ==== Item: " + item.name + " ==== ==== ==== ====");
+    console.log("IJ: (" + item.inventoryLocationIJ[0] + ", " + item.inventoryLocationIJ[1] + ")");
+    console.log("SIZE: (" + item.inventoryLocationSize[0] + ", " + item.inventoryLocationSize[1] + ")");
+}
+
+function debugInventory(inventory, text) {
+    console.log("==== ==== ==== ==== Inventory " + text + " ==== ==== ==== ====");
+    for (let i = 0; i < 4; i++) {
+        console.log(i + ": " + inventory[i][0] + "-" + inventory[i][1] + "-" + inventory[i][2] + "-" + inventory[i][3] 
+            + "-" + inventory[i][4] + "-" + inventory[i][5] + "-"+ inventory[i][6] + "-" + inventory[i][7] + "");
+    }
+}
+
+
+
+
+
+
+/////////////////////////t//o?////do/////to////do///////////////////////////////////////////////////
+//               COMPLETE THIS!!!!!!!!!!!!!!!!!!!1/////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+function checkLeftOfItem(itemIndex) { // Return true if empty, false otherwise
+    let currentItem = gameData.items[itemIndex];
+
+    for (let j = currentItem.inventoryLocationSize[1]; j > 0; j--) {
+
+        if (currentItem.inventoryLocationIJ[0] == 0) {
+            return false;
+        } 
+        
+        
+        
+        else if (gameData.inventory[currentItem.inventoryLocationIJ[0] - 1][j] == false) {
+            let empty = true;
+        }
+        
+    }
+
+    return empty;
+
+}
+
+function checkRightOfItem() { // Return true if empty, false otherwise
+
+}
+
+function checkUpOfItem() { // Return true if empty, false otherwise
+
+}
+
+function checkDownOfItem() { // Return true if empty, false otherwise
+
+}
+
+
+// currentItem --> inventorylocationsize (1, 4) / inventorylocationIJ
+// left: 
+
+
+
+
+
+
+
+
+
+
+
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DELETE THIS AFTER EXPERIMENT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// ==== ==== ==== ==== ==== ==== TEMPORARY: PUSH TO INVENTORY  ==== ==== ==== ==== ==== ====
+// gameData.items.push(cloneObject(apple_0));
+
+// inventory_24.items.push(cloneObject(apple_0));
+// getItemFromRoom("apple");
+// inventory_24.items.push(cloneObject(chicken_1));
+// getItemFromRoom("chicken");
+// inventory_24.items.push(cloneObject(apple_0));
+// getItemFromRoom("apple");
+
+// inventory_24.items.push(cloneObject(chicken_1));
+// getItemFromRoom("chicken");
+// inventory_24.items.push(cloneObject(chain_armor_7));
+// getItemFromRoom("chain armor");
+// inventory_24.items.push(cloneObject(long_sword_4));
+// getItemFromRoom("long sword");
 
 

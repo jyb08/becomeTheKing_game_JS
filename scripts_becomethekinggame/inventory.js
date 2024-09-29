@@ -139,8 +139,10 @@ function getItemFromRoom(itemName) {
     let i = inventoryIndex[0];
     let j = inventoryIndex[1];
     
-    if (itemIndex == -1) {
+    if (itemIndex == -1 && gameData.currentRoomId != 24) {
         displayMessage("No " + itemName + " exist!");
+    } else if (itemIndex == -1 && gameData.currentRoomId == 24) {
+        displayMessage("You have to type 'use [itemName]'");  
     } else if (itemIndex != -1 && inventoryIndex[0] == -1) {
         displayMessage("There is no available spot in your inventory.");  
     } else if (itemIndex != -1 && inventoryIndex[0] != -1) {
@@ -148,8 +150,10 @@ function getItemFromRoom(itemName) {
         let itemsInRoom = rooms[gameData.currentRoomId].items;
 
         // Deep copy the item and put i and j
-        let newItem = deepcopy(itemsInRoom[itemIndex]);
-        
+        // let newItem = deepcopy(itemsInRoom[itemIndex]);
+        let newItem = JSON.parse(JSON.stringify((itemsInRoom[itemIndex])));
+
+
         // Put the item into character's item storage
         newItem.inventoryLocationIJ[0] = i;
         newItem.inventoryLocationIJ[1] = j;
@@ -205,12 +209,6 @@ function getItemFromRoom(itemName) {
             gameData.inventory[i+3][j] = true;
         } 
 
-
-
-
-
-
-        
 
         // Delete the item from items array in the room
         itemsInRoom.splice(itemIndex, 1);
@@ -269,5 +267,105 @@ function findItemIdOfSelectedImage(mX, mY) {
 // cloneObject(item)
 // inventorylocXY --> i, j
 // gameData.item <= item
+
+
+function useItemFromInventory(itemName) {
+
+
+    let itemIndex = findItemInInventory(itemName);
+    
+    if (itemIndex == -1) {
+        return -1; // There is no designated item in the inventory.
+    } else {
+
+        if (itemName == "apple") { // Expendable
+            applyItemFromInventory(itemName, itemIndex);
+        } else if (itemName == "chicken") { // Expendable
+            applyItemFromInventory(itemName, itemIndex);
+        } else if (itemName == "medicine") { // Expendable
+            applyItemFromInventory(itemName, itemIndex);
+        } else if (itemName == "short sword") { // Equipment
+            equipItemFromInventory(itemName, itemIndex);
+        } else if (itemName == "long sword") { // Equipment
+            equipItemFromInventory(itemName, itemIndex);
+        } else if (itemName == "broadsword") { // Equipment
+            equipItemFromInventory(itemName, itemIndex);
+        } else if (itemName == "leather armor") { // Equipment
+            equipItemFromInventory(itemName, itemIndex);
+        } else if (itemName == "chain armor") { // Equipment
+            equipItemFromInventory(itemName, itemIndex);
+        } else if (itemName == "plate armor") { // Equipment
+            equipItemFromInventory(itemName, itemIndex);
+        } else if (itemName == "dragon sword") { // Equipment
+            equipItemFromInventory(itemName, itemIndex);
+        }
+    }
+    
+}
+
+function applyItemFromInventory(itemName, itemIndex) {
+    
+    updateGameDataInventoryToFalse(itemIndex);
+
+    Daphne_1.strength += gameData.items[itemIndex].strength;
+    if (Daphne_1.strength > Daphne_1.strengthMax) {
+        Daphne_1.strength = Daphne_1.strengthMax;
+    }
+
+    Daphne_1.intelligence += gameData.items[itemIndex].intelligence;
+    if (Daphne_1.intelligence > Daphne_1.intelligenceMax) {
+        Daphne_1.intelligence = Daphne_1.intelligenceMax;
+    }
+
+    Daphne_1.charisma += gameData.items[itemIndex].charisma;
+    if (Daphne_1.charisma > Daphne_1.charismaMax) {
+        Daphne_1.charisma = Daphne_1.charismaMax;
+    }
+
+    Daphne_1.healthPoint += gameData.items[itemIndex].healthPoint;
+    if (Daphne_1.healthPoint > Daphne_1.healthPointMax) {
+        Daphne_1.healthPoint = Daphne_1.healthPointMax;
+    }
+
+    Daphne_1.magicPoint += gameData.items[itemIndex].magicPoint;
+    if (Daphne_1.magicPoint > Daphne_1.magicPointMax) {
+        Daphne_1.magicPoint = Daphne_1.magicPointMax;
+    }
+
+    Daphne_1.energyPoint += gameData.items[itemIndex].energyPoint;
+    if (Daphne_1.energyPoint > Daphne_1.energyPointMax) {
+        Daphne_1.energyPoint = Daphne_1.energyPointMax;
+    }
+
+
+    gameData.items.splice(itemIndex, 1);
+
+    
+}
+
+
+function equipItemFromInventory(itemName, itemIndex) {
+
+}
+
+function findItemInInventory(itemName) {
+
+
+    for (let j = 0; j < gameData.items.length; j++) {
+        if (gameData.items[j].name == itemName) {
+            return j;
+        }
+    }
+
+    return -1;
+}
+
+
+
+
+
+
+
+
 
 

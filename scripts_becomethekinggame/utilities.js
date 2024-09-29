@@ -39,12 +39,6 @@ function displayCurrentLocation() {
 
     displayMessage(message);
 
-    if (rooms[gameData.currentRoomId].monster != 0
-        && rooms[gameData.currentRoomId].monster.occupation == "Monster"
-    ) { // MONSTER ATTACK FUNCTION CALLED. Works when monster exists in room
-        displayMessage("A Monster attacks you!");
-        monsterAttackMode();
-    }
 
 
 }
@@ -126,72 +120,26 @@ function processText() {
             displayMessage("You must defeat before moving!");
         }
                 
-    } else if (userInput == "a" 
-        && currentRoom.monster != 0
-        && currentRoom.monster.occupation != "Monster"
-    ) {
-        displayMessage("-----------NPC Attack Mode-----------");
-        let currentRoom = rooms[gameData.currentRoomId];
+    } else if (userInput == "a") {
 
-        if (currentRoom.monster != 0) {
-            let currentCharacter = currentRoom.monster;
-            let currentCharacterDead = false;
+        if (rooms[gameData.currentRoomId].monster != 0
+            && rooms[gameData.currentRoomId].monster.occupation != "Monster") { //NPC
+                attackByDaphne();
 
-            // Daphne attacks NPC
+                if (rooms[gameData.currentRoomId].monster.healthPoint != 0) {
+                    attackOnDaphne();
+                };
 
-            let effect1 = 
-            calculateDefensePoint(
-                currentCharacter.intelligence, 
-                currentCharacter.charisma) 
-            - calculateAttackPoint(Daphne_1.strength);
-
-            if (effect1 < 0) {
-                currentCharacter.healthPoint += effect1;
-                displayMessage("Daphne hit with an effect of " + effect1);
-            } else {
-                effect1 = 0;
-                displayMessage("Daphne missed attack.");
+            }
+        
+        if (rooms[gameData.currentRoomId].monster != 0
+            && rooms[gameData.currentRoomId].monster.occupation == "Monster") { //MONSTER
+                attackOnDaphne();
+                attackByDaphne();
             }
 
-            if (currentCharacter.healthPoint <= 0) { // The NPC is dead.
-                displayMessage(currentCharacter.name + " is DEAD!");
-                
-                // Money, NPC's money x prob
-                let earnedMoney = calculateAdjustedRandomMoneyOrExp(currentCharacter.money);
-                Daphne_1.money += earnedMoney;
-                displayMessage("Daphne got " + earnedMoney + " money.");
-
-                // Experience, NPC's exp x prob
-                let earnedExp = calculateAdjustedRandomMoneyOrExp(currentCharacter.experience);
-                Daphne_1.experience += earnedExp;
-                displayMessage("Daphne got " + earnedExp + " experience.");
-
-                // NPC gone
-                currentCharacter.healthPoint = 0;
-                currentCharacterDead = true;
-                currentRoom.monster = 0;
-                levelUp();
-            }
-
-            // NPC attacks Daphne
-            if (currentCharacterDead == false) {
-                let effect2 = calculateDefensePoint(Daphne_1.intelligence, Daphne_1.charisma) 
-                        - calculateAttackPoint(currentCharacter.strength);
-            
-                if (effect2 < 0) {
-                    Daphne_1.healthPoint += effect2;
-                    displayMessage("NPC hit with an effect of " + effect2);
-                } else {
-                    effect2 = 0;
-                    displayMessage("NPC missed attack.");
-                }
-                
-                if (Daphne_1.healthPoint <= 0) { // Daphne is dead.
-                    Daphne_1.healthPoint = 0;
-                    gameData.currentRoomId = 23;
-                }
-            }
-                        
+        else {
+            displayMessage("There is no one in this room!");
         }
 
     } else if (userInput == "i") {
@@ -207,111 +155,27 @@ function processText() {
             displayMessage("================ ITEM MODE EXIT ================");
         }
 
-    } else if (userInput == "z") { // "z" for testing
-        
-        // rooms[gameData.currentRoomId].getItemFromRoom("apple");
-
     } else if (userInput.includes("get")) {
         let itemInUserInput = userInput.replace("get ", "");
         getItemFromRoom(itemInUserInput);
+
+    } else if (userInput.includes("use") && gameData.currentRoomId == 24) {
+
+        let itemInUserInput = userInput.replace("use ", "");
+        let result = useItemFromInventory(itemInUserInput);
+        if (result == -1) {
+            displayMessage("You don't have ANY ITEMS!");
+        }
 
     } else if (userInput == "exit") {
         close();
     }
 
-
-    
     // Display Directions
     displayCurrentLocation();
 
-
     displayMessage("Enter input: (type exit to quit) ");
 }
-
-
-function monsterAttackMode() {
-    displayMessage("-----------Monster Attack Mode-----------");
-    
-    while (currentRoom.monster != 0) {
-        displayMessage("Enter something: ");
-
-        let userInput = displayText();
-
-
-
-
-        
-    
-
-    }
-
-    
-
-
-
-
-}
-
-function attackMonster() {
-
-    let currentRoom = rooms[gameData.currentRoomId];
-        
-    if (currentRoom.monster != 0) {
-
-        let currentMonster = currentRoom.monster;
-        
-        // Monster attacks Daphne.
-        let effect1 = calculateDefensePoint(Daphne_1.intelligence, Daphne_1.charisma) 
-                    - calculateAttackPoint(currentMonster.strength);
-        
-        if (effect1 < 0) {
-            Daphne_1.healthPoint += effect1;
-            displayMessage("Monster hit with an effect of " + effect1);
-        } else {
-            effect1 = 0;
-            displayMessage("Monster missed attack.");
-        }
-        
-        if (Daphne_1.healthPoint <= 0) { // Daphne is dead.
-            Daphne_1.healthPoint = 0;
-            gameData.currentRoomId = 23;
-        }
-
-        // Daphne attacks the frontal monster.
-        let effect2 = calculateDefensePoint(currentMonster.intelligence, currentMonster.charisma) 
-                    - calculateAttackPoint(Daphne_1.strength);
-        
-        if (effect2 < 0) {
-            currentMonster.healthPoint += effect2;
-            displayMessage("Daphne hit with an effect of " + effect2);
-        } else {
-            effect2 = 0;
-            displayMessage("Daphne missed attack.");
-        }
-        
-        if (currentMonster.healthPoint <= 0) { // The monster is dead.
-            displayMessage(currentMonster.name + " is DEAD!");
-            
-            // Money, monster's money x prob
-            let earnedMoney = calculateAdjustedRandomMoneyOrExp(currentMonster.money);
-            Daphne_1.money += earnedMoney;
-            displayMessage("Daphne got " + earnedMoney + " money.");
-
-            // Experience, monster's exp x prob
-            let earnedExp = calculateAdjustedRandomMoneyOrExp(currentMonster.experience);
-            Daphne_1.experience += earnedExp;
-            displayMessage("Daphne got " + earnedExp + " experience.");
-
-            // Monster gone
-            currentMonster.healthPoint = 0;
-            currentRoom.monster = 0;
-            levelUp();
-        }
-    }
-    
-}
-
-
 
 function findAvailableItemIndex(itemName) {
 
@@ -327,6 +191,80 @@ function findAvailableItemIndex(itemName) {
 }
 
 
+
+function attackByDaphne() {
+
+    displayMessage("-----------YOU ARE ATTACKING-----------");
+    let currentRoom = rooms[gameData.currentRoomId];
+
+    if (currentRoom.monster != 0) {
+        let currentCharacter = currentRoom.monster;
+        let currentCharacterDead = false;
+
+        
+        let effect = 
+        calculateDefensePoint(
+            currentCharacter.intelligence, 
+            currentCharacter.charisma) 
+        - calculateAttackPoint(Daphne_1.strength);
+
+        if (effect < 0) {
+            currentCharacter.healthPoint += effect;
+            displayMessage("Daphne hit with an effect of " + effect);
+        } else {
+            displayMessage("Daphne missed attack.");
+        }
+
+        if (currentCharacter.healthPoint <= 0 && currentCharacter.characterId == 5) { // ENDING!!!
+            gameData.currentRoomId = 25;
+            gameData.endingEntered = true;
+
+            displayMessage(currentCharacter.name + " is DEAD!");
+
+        } else if (currentCharacter.healthPoint <= 0 && currentCharacter.characterId != 5) { // The character is DEAD.
+            displayMessage(currentCharacter.name + " is DEAD!");
+            
+            // Money, money x prob
+            let earnedMoney = calculateAdjustedRandomMoneyOrExp(currentCharacter.money);
+            Daphne_1.money += earnedMoney;
+            displayMessage("Daphne got " + earnedMoney + " money.");
+
+            // Experience, exp x prob
+            let earnedExp = calculateAdjustedRandomMoneyOrExp(currentCharacter.experience);
+            Daphne_1.experience += earnedExp;
+            displayMessage("Daphne got " + earnedExp + " experience.");
+
+            // character gone
+            currentCharacter.healthPoint = 0;
+            currentCharacterDead = true;
+            currentRoom.monster = 0;
+            levelUp();
+
+        }
+    }
+}
+
+function attackOnDaphne() {
+    let currentRoom = rooms[gameData.currentRoomId];
+    let currentCharacter = currentRoom.monster;
+    displayMessage("-----------YOU ARE GETTING ATTACKED-----------");
+    let effect = calculateDefensePoint(Daphne_1.intelligence, Daphne_1.charisma) 
+    - calculateAttackPoint(currentCharacter.strength);
+
+    if (effect < 0) {
+        Daphne_1.healthPoint += effect;
+        displayMessage("You were hit with an effect of " + effect);
+    } else {
+        effect = 0;
+        displayMessage("They missed an attack.");
+    }
+
+    if (Daphne_1.healthPoint <= 0) { // Daphne is dead.
+        Daphne_1.healthPoint = 0;
+        gameData.currentRoomId = 23;
+    }
+    
+}
 
 function calculateAdjustedRandomMoneyOrExp(moneyOrExp) {
     point = moneyOrExp * int(random(50, 100)) / 100;
@@ -346,28 +284,31 @@ function calculateDefensePoint(intelligence, charisma) {
 
 function levelUp() {
 
-    if (Daphne_1.experience >= 100) {
+
+    // TODO!!!! TODO!!!! TODO!!!! TODO!!!! TODO!!!! TODO!!!! TODO!!!! TODO!!!! TODO!!!! TODO!!!! TODO!!!! TODO!!!! TODO!!!! TODO!!!! TODO!!!! TODO!!!!
+    // if (Daphne_1.experience >= 100) { //YOU HAVE TO CHANGE THIS TO 100!!!!! THIS IS WRONG
+    if (true) { //YOU HAVE TO CHANGE THIS TO 100!!!!! THIS IS WRONG
         Daphne_1.level += 1;
         Daphne_1.experience -= 100;
 
         displayMessage("Daphne's level is now " + Daphne_1.level);
 
-        let added_strength = 2 + int(random(0, 100)) % 3;
+        let added_strength = 1 + int(random(0, 100)) % 2;
         Daphne_1.strengthMax += added_strength;
         Daphne_1.strength = Daphne_1.strengthMax;
-        let added_intelligence = 2 + int(random(0, 100)) % 3;
+        let added_intelligence = 1 + int(random(0, 100)) % 2;
         Daphne_1.intelligenceMax += added_intelligence;
         Daphne_1.intelligence = Daphne_1.intelligenceMax;
-        let added_charisma = 1 + int(random(0, 100)) % 3;
+        let added_charisma = 1 + int(random(0, 100)) % 2;
         Daphne_1.charismaMax += added_charisma;
         Daphne_1.charisma = Daphne_1.charismaMax;
-        let added_healthPoint = 3 + int(random(0, 100)) % 3;
+        let added_healthPoint = 2 + int(random(0, 100)) % 2;
         Daphne_1.healthPointMax += added_healthPoint;
         Daphne_1.healthPoint = Daphne_1.healthPointMax;
-        let added_magicPoint = 2 + int(random(0, 100)) % 3;
+        let added_magicPoint = 2 + int(random(0, 100)) % 2;
         Daphne_1.magicPointMax += added_magicPoint;
         Daphne_1.magicPoint = Daphne_1.magicPointMax;
-        let added_energyPoint = 1 + int(random(0, 100)) % 3;
+        let added_energyPoint = 1 + int(random(0, 100)) % 2;
         Daphne_1.energyPointMax += added_energyPoint;
         Daphne_1.energyPoint = Daphne_1.energyPointMax;
 
